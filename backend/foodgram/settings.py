@@ -1,21 +1,23 @@
-from os import environ
+import os
 from pathlib import Path
-
-from dotenv import load_dotenv
-
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = environ.get('SECRET_KEY', default='ks&%fe6v4)-+8knxf+j-9_1n9)qi9(f0!6nl2d13vr6s=*6n9(')
 
-DEBUG = environ.get('DEBUG')
+SECRET_KEY = '1^vo^nh-y8l%s_r%rcy*pf*o-o#ic=p^jnqw8zfyq4o5t354v0'
 
-ALLOWED_HOSTS = environ['ALLOWED_HOSTS'].split(',')
+DEBUG = True
 
-INTERNAL_IPS = ['127.0.0.1']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '*'
+]
+
 
 INSTALLED_APPS = [
+    'recipes',
+    'users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -26,9 +28,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
-    'users.apps.UsersConfig',
-
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -60,37 +62,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
+
 DATABASES = {
     'default': {
-        'ENGINE': environ['DB_ENGINE'],
-        'NAME': environ['DB_NAME'],
-        'USER': environ['POSTGRES_USER'],
-        'PASSWORD': environ['POSTGRES_PASSWORD'],
-        # 'HOST' : '127.0.0.1',
-        # 'PORT' : '5432',
-        'HOST': environ['DB_HOST'],
-        'PORT': environ['DB_PORT'],
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
-AUTH_USER_MODEL = 'users.UserCustom'
-
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation'
-                '.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation'
-                '.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation'
-                '.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation'
-                '.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -98,13 +89,33 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
 }
 
 DJOSER = {
-    'LOGIN_FIELD': 'email'
-}
+       'LOGIN_FIELD': 'email',
+       'SERIALIZERS': { 
+           'user_create': 'users.serializers.UserRegistrationSerializer',
+           'user': 'users.serializers.CustomUserSerializer',
+           'current_user': 'users.serializers.CustomUserSerializer',
+       },
+       'USER_ID_FIELD': 'id',
+       'HIDE_USERS': False,
+       'PERMISSIONS': {
+           'user': ['rest_framework.permissions.IsAuthenticated'],
+           'user_list': ['rest_framework.permissions.AllowAny']           
+       },
+   }
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Europe/Moscow'
 
@@ -114,10 +125,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static_backend/'
-STATIC_ROOT = BASE_DIR / 'static_backend/'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

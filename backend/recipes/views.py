@@ -14,6 +14,7 @@ from .serializers import (IngredientsSerializer, TagsSerializer,
                           FavouriteSerializer, ShoppingListSerializer)
 
 
+
 class RetriveAndListViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -60,11 +61,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
-        user = request.user
+        if request.user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         recipe = get_object_or_404(Recipe, id=pk)
-        favorite = get_object_or_404(Favorite, user=user, recipe=recipe)
-        favorite.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            Favorite.objects.get(user=request.user, recipe=recipe).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Favorite.DoesNotExist:
+            return Response(
+                'Нет данного рецепта в избранном',
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     @action(detail=True, permission_classes=[IsAuthorOrAdmin])
     def shopping_cart(self, request, pk):
@@ -77,12 +84,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
-        user = request.user
-        recipe = get_object_or_404(Recipe, id=pk)
-        shopping_list = get_object_or_404(ShoppingList,
-                                          user=user, recipe=recipe)
-        shopping_list.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            recipe = Recipe.objects.get(id=pk)
+            shopping_list = ShoppingList.objects.get(
+                user=request.user,
+                recipe=recipe,
+            )
+            shopping_list.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Recipe.DoesNotExist:
+            return Response(
+                'Нет данного рецепта в списке покупок',
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except ShoppingList.DoesNotExist:
+            return Response(
+                'Нет данного рецепта в списке покупок',
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
@@ -93,24 +114,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 def get_ingredients_list(recipes_list):
     ingredients_dict = {}
+    list_to_buy = []
     for recipe in recipes_list:
         ingredients = RecipeIngredients.objects.filter(recipe=recipe.recipe)
         for ingredient in ingredients:
-            amount = ingredient.amount
             name = ingredient.ingredient.name
+            amount = ingredient.amount
             measurement_unit = ingredient.ingredient.measurement_unit
-            if name not in ingredients_dict:
-                ingredients_dict[name] = {
-                    'measurement_unit': measurement_unit,
-                    'amount': amount
-                }
-            else:
+            if name in ingredients_dict:
                 ingredients_dict[name]['amount'] += amount
-    to_buy = []
-    for item in ingredients_dict:
-        to_buy.append(f'{item} - {ingredients_dict[item]["amount"]} '
-                      f'{ingredients_dict[item]["measurement_unit"]} \n')
-    return to_buy
+            else:
+                ingredients_dict[name] = {
+                    'meas': measurement_unit,
+                    'amount': amount,
+                }
+    for key, value in ingredients_dict.items():
+        list_to_buy.append(
+            f'{key} - {value["amount"]} {value["meas"]}.\n',
+        )
+    return list_to_buy
 
 
 def download_file_response(list_to_download, filename):

@@ -1,11 +1,9 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer, UserSerializer
-
 from recipes.models import Recipe
+from rest_framework import serializers
 
 from .models import Follow
-
 
 User = get_user_model()
 
@@ -53,14 +51,12 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class FollowingRecipesSerializers(serializers.ModelSerializer):
-
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class ShowFollowSerializer(serializers.ModelSerializer):
-
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
@@ -68,14 +64,8 @@ class ShowFollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'id',
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
-            'recipes',
-            'recipes_count'
+            'id', 'email', 'username', 'first_name', 'last_name',
+            'is_subscribed', 'recipes', 'recipes_count'
         )
         read_only_fields = fields
 
@@ -93,7 +83,7 @@ class ShowFollowSerializer(serializers.ModelSerializer):
         else:
             recipes = obj.recipes.all()
         context = {'request': request}
-        return FollowingRecipesSerializers(recipes, many=True, 
+        return FollowingRecipesSerializers(recipes, many=True,
                                            context=context).data
 
     def get_recipes_count(self, obj):

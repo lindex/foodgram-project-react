@@ -17,14 +17,10 @@ class AdminIngredient(admin.ModelAdmin):
 
 class RecipeIngredientsInline(admin.TabularInline):
     model = RecipeIngredients
-    min_num = 1
-    extra = 1
 
 
 class RecipeTagsInline(admin.TabularInline):
     model = RecipeTags
-    min_num = 1
-    extra = 0
 
 
 @admin.register(Recipe)

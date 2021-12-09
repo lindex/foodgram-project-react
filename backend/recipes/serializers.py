@@ -3,31 +3,26 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 from users.serializers import CustomUserSerializer
+
 from .models import (Favorite, Ingredient, Recipe, RecipeIngredients,
-                            ShoppingList, Tag)
+                     ShoppingList, Tag)
 
 User = get_user_model()
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
-
-
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
 class TagsSerializer(serializers.ModelSerializer):
-
-
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
 
 
 class ShowRecipeIngredientsSerializer(serializers.ModelSerializer):
-
-
     id = serializers.PrimaryKeyRelatedField(
         read_only=True,
         source='ingredient'
@@ -49,16 +44,12 @@ class ShowRecipeIngredientsSerializer(serializers.ModelSerializer):
 
 
 class ShowRecipeSerializer(serializers.ModelSerializer):
-
-
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class ShowRecipeFullSerializer(serializers.ModelSerializer):
-
-
     tags = TagsSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
     ingredients = serializers.SerializerMethodField()
@@ -92,8 +83,6 @@ class ShowRecipeFullSerializer(serializers.ModelSerializer):
 
 
 class AddRecipeIngredientsSerializer(serializers.ModelSerializer):
-
-
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField()
 
@@ -103,8 +92,6 @@ class AddRecipeIngredientsSerializer(serializers.ModelSerializer):
 
 
 class AddRecipeSerializer(serializers.ModelSerializer):
-
-
     image = Base64ImageField()
     author = CustomUserSerializer(read_only=True)
     ingredients = AddRecipeIngredientsSerializer(many=True)
@@ -138,8 +125,8 @@ class AddRecipeSerializer(serializers.ModelSerializer):
             ingredient_id = ingredient['id']
             amount = ingredient['amount']
             if RecipeIngredients.objects.filter(
-                recipe=recipe,
-                ingredient=ingredient_id,
+                    recipe=recipe,
+                    ingredient=ingredient_id,
             ).exists():
                 amount += ingredient['amount']
             RecipeIngredients.objects.update_or_create(
@@ -181,8 +168,6 @@ class AddRecipeSerializer(serializers.ModelSerializer):
 
 
 class FavouriteSerializer(serializers.ModelSerializer):
-
-
     recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
@@ -204,8 +189,6 @@ class FavouriteSerializer(serializers.ModelSerializer):
 
 
 class ShoppingListSerializer(serializers.ModelSerializer):
-
-
     recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 

@@ -47,7 +47,7 @@ class Tag(models.Model):
         max_length=100,
         unique=True,
         null=False,
-        blank=False, 
+        blank=False,
         verbose_name='Идентификатор tag'
     )
 
@@ -103,7 +103,6 @@ class Recipe(models.Model):
         ],
         verbose_name='Время приготовления в минутах',
     )
-    
 
     class Meta:
         ordering = ('-id',)
@@ -126,8 +125,8 @@ class RecipeIngredients(models.Model):
         verbose_name='Ингридиент'
     )
     amount = models.PositiveIntegerField(
-        validators=[MinValueValidator(1, 'Минимальное количество = 1'),],
-        verbose_name='Количество'    
+        validators=[MinValueValidator(1, 'Минимальное количество = 1'), ],
+        verbose_name='Количество'
     )
 
     class Meta:

@@ -1,6 +1,7 @@
 from django.contrib import admin
+
 from .models import (Favorite, Ingredient, Recipe, RecipeIngredients,
-                            RecipeTags, ShoppingList, Tag)
+                     RecipeTags, ShoppingList, Tag)
 
 
 @admin.register(Tag)

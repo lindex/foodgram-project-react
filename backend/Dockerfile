@@ -1,7 +1,7 @@
 FROM python:3.9
 
 WORKDIR /code
-COPY ../../../../Users/linde/Downloads/foodgram-project-react-master%20 /code
+COPY . /code
 RUN python3 -m pip install --upgrade pip && \
     pip3 install -r /code/requirements.txt --no-cache-dir && \
     python3 /code/manage.py collectstatic --noinput

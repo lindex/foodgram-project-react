@@ -3,17 +3,17 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-SECRET_KEY = '1^vo^nh-y8l%s_r%rcy*pf*o-o#ic=p^jnqw8zfyq4o5t354v0'
+SECRET_KEY = os.environ.get('SECRET_KEY',
+                default='1^vo^nh-y8l%s_r%rcy*pf*o-o#ic=p^jnqw8zfyq4o5t354v0')
 
 DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '192.168.1.74',
     '*'
 ]
-
 
 INSTALLED_APPS = [
     'recipes',
@@ -62,10 +62,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'ENGINE': os.environ.get('DB_ENGINE',
+                                 default='django.db.backends.sqlite3'),
         'NAME': os.environ.get('DB_NAME', default='test'),
         'USER': os.environ.get('DB_USER', default='test'),
         'PASSWORD': os.environ.get('DB_PASSWORD', default='test.sqlite3'),
@@ -89,8 +89,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -107,19 +105,19 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-       'LOGIN_FIELD': 'email',
-       'SERIALIZERS': { 
-           'user_create': 'users.serializers.UserRegistrationSerializer',
-           'user': 'users.serializers.CustomUserSerializer',
-           'current_user': 'users.serializers.CustomUserSerializer',
-       },
-       'USER_ID_FIELD': 'id',
-       'HIDE_USERS': False,
-       'PERMISSIONS': {
-           'user': ['rest_framework.permissions.IsAuthenticated'],
-           'user_list': ['rest_framework.permissions.AllowAny']           
-       },
-   }
+    'LOGIN_FIELD': 'email',
+    'SERIALIZERS': {
+        'user_create': 'users.serializers.UserRegistrationSerializer',
+        'user': 'users.serializers.CustomUserSerializer',
+        'current_user': 'users.serializers.CustomUserSerializer',
+    },
+    'USER_ID_FIELD': 'id',
+    'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'user': ['rest_framework.permissions.IsAuthenticated'],
+        'user_list': ['rest_framework.permissions.AllowAny']
+    },
+}
 
 LANGUAGE_CODE = 'ru'
 

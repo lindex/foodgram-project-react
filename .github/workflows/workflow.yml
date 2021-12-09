@@ -57,7 +57,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            sudo docker pull lindex1/foodgram_backend:latest
+            sudo docker pull lindex1/diplom:latest
             cd foodgram-project-react/infra
             sudo docker-compose down
             sudo docker-compose up -d

@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  postgresql:
+  db:
     env_file:
       - ./.env
     image: postgres:12.4
@@ -8,7 +8,7 @@ services:
       - postgresql_data:/var/lib/postgresql/data/
     restart: always
 
-  backend:
+  web:
     build:
       context: ../backend
       dockerfile: Dockerfile
@@ -17,9 +17,10 @@ services:
     volumes:
       - static_data:/code/static/
       - media_data:/code/media/
+      - ../backend/:/code/
     restart: always
     depends_on:
-      - postgresql
+      - db
 
   frontend:
     build:
@@ -41,7 +42,7 @@ services:
       - media_data:/media/
     restart: always
     depends_on:
-      - backend
+      - web
       - frontend
 
 volumes:

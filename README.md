@@ -4,10 +4,11 @@
 Продуктовая соц. сеть для любителей рецептов
 
 ### Проект доступен по ссылке :
+http://178.154.214.91/recipes -Frond
 http://178.154.214.91/api/ - Api
 http://178.154.214.91/api/docs/ - Redoc
 
-![yamdb-final workflow](https://github.com/lindex/foodgram-project-react/actions/workflows/foodgram-project-react.yml/badge.svg)
+
 
 
 

@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 User = get_user_model()
@@ -8,14 +8,10 @@ User = get_user_model()
 class Ingredient(models.Model):
     name = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
         verbose_name='Название ингредиента'
     )
     measurement_unit = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
         verbose_name='Единицы измерения'
     )
 
@@ -32,22 +28,16 @@ class Tag(models.Model):
     name = models.CharField(
         max_length=100,
         unique=True,
-        null=False,
-        blank=False,
         verbose_name='Название tag'
     )
     color = models.CharField(
         max_length=7,
         unique=True,
-        null=False,
-        blank=False,
         verbose_name='Цвет tag'
     )
     slug = models.CharField(
         max_length=100,
         unique=True,
-        null=False,
-        blank=False,
         verbose_name='Идентификатор tag'
     )
 
@@ -70,19 +60,14 @@ class Recipe(models.Model):
     name = models.CharField(
         max_length=100,
         unique=True,
-        blank=False,
-        null=False,
         verbose_name='Название рецепта'
     )
     image = models.ImageField(
         upload_to='recipes/',
-        blank=False,
-        null=False,
         verbose_name='Фото рецепта'
     )
     text = models.TextField(
-        blank=False,
-        null=False,
+
         verbose_name='Описание рецепта'
     )
     ingredients = models.ManyToManyField(

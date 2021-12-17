@@ -5,7 +5,7 @@ from rest_framework.serializers import ValidationError
 
 from users.serializers import CustomUserSerializer
 
-from .models import (Favorite, Ingredient, Recipe, RecipeIngredients,
+from .models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                      ShoppingList, Tag)
 
 User = get_user_model()
@@ -40,7 +40,7 @@ class ShowRecipeIngredientsSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = RecipeIngredients
+        model = RecipeIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
@@ -66,7 +66,7 @@ class ShowRecipeFullSerializer(serializers.ModelSerializer):
         )
 
     def get_ingredients(self, obj):
-        ingredients = RecipeIngredients.objects.filter(recipe=obj)
+        ingredients = RecipeIngredient.objects.filter(recipe=obj)
         return ShowRecipeIngredientsSerializer(ingredients, many=True).data
 
     def get_is_favorited(self, obj):
@@ -88,7 +88,7 @@ class AddRecipeIngredientsSerializer(serializers.ModelSerializer):
     amount = serializers.IntegerField()
 
     class Meta:
-        model = RecipeIngredients
+        model = RecipeIngredient
         fields = ('id', 'amount')
 
 
@@ -108,11 +108,22 @@ class AddRecipeSerializer(serializers.ModelSerializer):
 
     def validate_ingredients(self, data):
         ingredients = self.initial_data.get('ingredients')
-        if ingredients == []:
+        if not ingredients:
             raise ValidationError('Не выбрано ни одного ингредиента!')
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
                 raise ValidationError('Количество должно быть положительным!')
+            pk = int(ingredient['id'])
+            if pk < 0:
+                raise ValidationError('id элемента не можети быть '
+                                      'отрицательным')
+        return data
+
+    def validate_tags(self, data):
+        if not data:
+            raise ValidationError('Необходимо отметить хотя бы один тег')
+        if len(data) != len(set(data)):
+            raise ValidationError('Один тег указан дважды')
         return data
 
     def validate_cooking_time(self, data):
@@ -125,12 +136,12 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         for ingredient in ingredients:
             ingredient_id = ingredient['id']
             amount = ingredient['amount']
-            if RecipeIngredients.objects.filter(
+            if RecipeIngredient.objects.filter(
                     recipe=recipe,
                     ingredient=ingredient_id,
             ).exists():
                 amount += ingredient['amount']
-            RecipeIngredients.objects.update_or_create(
+            RecipeIngredient.objects.update_or_create(
                 recipe=recipe,
                 ingredient=ingredient_id,
                 defaults={'amount': amount},
@@ -158,8 +169,7 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         if 'tags' in self.initial_data:
             tags_data = validated_data.pop('tags')
             recipe.tags.set(tags_data)
-        recipe.save()
-        return recipe
+        return super().update(recipe, validated_data)
 
     def to_representation(self, recipe):
         return ShowRecipeSerializer(

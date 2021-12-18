@@ -3,6 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
+
 User = get_user_model()
 
 
@@ -73,12 +74,12 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='RecipeIngredients',
+        through='RecipeIngredient',
         verbose_name='Ингредиенты, используемые в рецепте'
     )
     tags = models.ManyToManyField(
         Tag,
-        through='RecipeTags',
+        through='RecipeTag',
         verbose_name='Теги, используемые для рецепта'
     )
     cooking_time = models.PositiveIntegerField(
@@ -181,6 +182,7 @@ class ShoppingList(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
+        related_name='shopping_cart',
         verbose_name='Рецепт'
     )
 

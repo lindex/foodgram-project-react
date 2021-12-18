@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
@@ -13,7 +13,7 @@ from .permissions import IsAuthorOrAdmin
 from .serializers import (AddRecipeSerializer, FavouriteSerializer,
                           IngredientsSerializer, ShoppingListSerializer,
                           ShowRecipeFullSerializer, TagsSerializer)
-from .utils import get_ingredients_list, download_file_response
+from .utils import download_file_response
 
 
 class IngredientsViewSet(RetriveAndListViewSet):
@@ -101,6 +101,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
-        to_buy = get_ingredients_list(request)
-        return download_file_response(to_buy, 'to_buy.txt')
-
+        ingredients_list = RecipeIngredient.objects.filter(
+            recipe__shopping_cart__user=request.user
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
+        return download_file_response(ingredients_list)

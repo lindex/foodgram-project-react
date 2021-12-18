@@ -4,7 +4,6 @@ from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 
 from users.serializers import CustomUserSerializer
-
 from .models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                      ShoppingList, Tag)
 
@@ -110,12 +109,16 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         if not ingredients:
             raise ValidationError('Не выбрано ни одного ингредиента!')
+        ingredients_ids = [ingredient['id'] for ingredient in ingredients]
+        if len(ingredients) != len(set(ingredients_ids)):
+            raise serializers.ValidationError('Вы не можете добавить один '
+                                              'ингридиент дважды')
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
                 raise ValidationError('Количество должно быть положительным!')
             pk = int(ingredient['id'])
             if pk < 0:
-                raise ValidationError('id элемента не можети быть '
+                raise ValidationError('id элемента не может быть '
                                       'отрицательным')
         return data
 
@@ -157,11 +160,6 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, recipe, validated_data):
-        recipe.name = validated_data.get('name', recipe.name)
-        recipe.text = validated_data.get('text', recipe.text)
-        recipe.cooking_time = validated_data.get('cooking_time',
-                                                 recipe.cooking_time)
-        recipe.image = validated_data.get('image', recipe.image)
         if 'ingredients' in self.initial_data:
             ingredients = validated_data.pop('ingredients')
             recipe.ingredients.clear()
@@ -169,6 +167,7 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         if 'tags' in self.initial_data:
             tags_data = validated_data.pop('tags')
             recipe.tags.set(tags_data)
+        super().update(recipe, validated_data)
         return super().update(recipe, validated_data)
 
     def to_representation(self, recipe):

@@ -14,7 +14,6 @@ http://178.154.214.91/api/docs/ - Redoc
 
 
 
-
 ## Описание Workflow
 
 ##### Workflow состоит из четырёх шагов:

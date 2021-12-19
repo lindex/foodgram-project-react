@@ -112,7 +112,7 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         ingredients_ids = [ingredient['id'] for ingredient in ingredients]
         if len(ingredients) != len(set(ingredients_ids)):
             raise serializers.ValidationError('Вы не можете добавить один '
-                                              'ингридиент дважды')
+                                              'ингредиент дважды')
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
                 raise ValidationError('Количество должно быть положительным!')
@@ -167,7 +167,6 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         if 'tags' in self.initial_data:
             tags_data = validated_data.pop('tags')
             recipe.tags.set(tags_data)
-        super().update(recipe, validated_data)
         return super().update(recipe, validated_data)
 
     def to_representation(self, recipe):

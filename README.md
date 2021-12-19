@@ -10,7 +10,12 @@ http://178.154.214.91/api/ - Api
 
 http://178.154.214.91/api/docs/ - Redoc
 
+http://178.154.214.91/api/admin/ - admin
 
+login - admin@admin.ru
+pass - admin
+
+ 
 
 
 

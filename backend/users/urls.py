@@ -4,7 +4,7 @@ from djoser.views import TokenCreateView, TokenDestroyView
 from .views import FollowApiView, ListFollowViewSet
 
 urlpatterns = [
-    path('', include('djoser.urls')),
+
 
     path('auth/token/login/', TokenCreateView.as_view(), name='login'),
     path('auth/token/logout/', TokenDestroyView.as_view(), name='logout'),
@@ -16,4 +16,5 @@ urlpatterns = [
     path('users/subscriptions/', ListFollowViewSet.as_view(),
          name='subscription'
          ),
+    path('', include('djoser.urls')),
 ]

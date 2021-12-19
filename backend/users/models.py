@@ -56,9 +56,8 @@ class Follow(models.Model):
             fields=['user', 'author'],
             name='unigue_subscriber'
         )]
-        ordering = ['-author']
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
 
     def __str__(self):
-        return self.author[:10]
+        return f'{self.user} подписан на {self.author}'

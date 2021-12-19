@@ -1,11 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Follow
 from .serializers import FollowSerializer, ShowFollowSerializer
+from .paginator import CustomPageNumberPaginator
 
 User = get_user_model()
 
@@ -23,17 +25,23 @@ class FollowApiView(APIView):
     def delete(self, request, id):
         user = request.user
         author = get_object_or_404(User, id=id)
-        subscription = get_object_or_404(Follow, user=user,
-                                         author=author)
-        subscription.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            subscription = Follow.objects.get(user=user, author=author)
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Follow.DoesNotExist:
+            return Response(
+                'Ошибка отписки',
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class ListFollowViewSet(generics.ListAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = ShowFollowSerializer
+    pagination_class = CustomPageNumberPaginator
 
     def get_queryset(self):
         user = self.request.user
-        return User.objects.filter(author__user=user)
+        return User.objects.filter(following__user=user)

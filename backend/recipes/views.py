@@ -14,6 +14,7 @@ from .serializers import (AddRecipeSerializer, FavouriteSerializer,
                           IngredientsSerializer, ShoppingListSerializer,
                           ShowRecipeFullSerializer, TagsSerializer)
 from .utils import download_file_response
+from users.paginator import CustomPageNumberPaginator
 
 
 class IngredientsViewSet(RetriveAndListViewSet):
@@ -38,6 +39,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthorOrAdmin]
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
+    pagination_class = CustomPageNumberPaginator
+
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

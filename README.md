@@ -4,13 +4,13 @@
 Продуктовая соц. сеть для любителей рецептов
 
 ### Проект доступен по ссылке :
-http://178.154.214.91/recipes -Frond
+http://178.154.214.91/recipes -Front
 
 http://178.154.214.91/api/ - Api
 
 http://178.154.214.91/api/docs/ - Redoc
 
-http://178.154.214.91/api/admin/ - admin
+http://178.154.214.91/admin/ - admin
 
 login - admin@admin.ru
 pass - admin

@@ -5,16 +5,14 @@
 Проект диплома яндекс практикума
 
 ### Проект доступен по ссылке :
-http://178.154.214.91/recipes -Front
+http://*url*/recipes -Front
 
-http://178.154.214.91/api/ - Api
+http://*url*/api/ - Api
 
-http://178.154.214.91/api/docs/ - Redoc
+http://*url*/api/docs/ - Redoc
 
-http://178.154.214.91/admin/ - admin
+http://*url*/admin/ - admin
 
-login - admin@admin.ru
-pass - admin
 
  
 
@@ -97,6 +95,5 @@ TELEGRAM_TOKEN=<токен бота>
 
 ### Участники
 
-студенты курса Python-разработчик в Яндекс.Практикуме
+выпускник курса Python-разработчик в Яндекс.Практикуме
 - [lindex](https://github.com/lindex/) - Марк
-[mitya888](https://github.com/mitya888/) - Дмитрий
